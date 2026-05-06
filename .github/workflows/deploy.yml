@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -27,26 +26,30 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Bumping to 22 to fix the deprecation warning!
+          node-version: 22
 
       - name: Verify PAT Token exists
         run: |
           if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
-            echo "Error: PAT_TOKEN is missing. Please check your repository secrets at zenocodes/zenocodes.github.io."
+            echo "Error: PAT_TOKEN is missing. Please check your repository secrets."
             exit 1
           fi
 
-      # A bulletproof auth config that catches every variation of a Git URL
       - name: Authenticate with GitHub
         run: |
+          # Copilot's trick: Passes the token directly to the NPM engine
+          echo "//github.com/:_authToken=${{ secrets.PAT_TOKEN }}" >> ~/.npmrc
+          
+          # Git rewrite rules to catch any lingering SSH attempts
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git@github.com:"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git+ssh://git@github.com/"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git+https://github.com/"
 
+      # Bypass the broken Mac lockfile and force a fresh HTTPS installation
       - name: Install Dependencies
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Build Project
         run: npm run build
