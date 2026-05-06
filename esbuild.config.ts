@@ -1,11 +1,12 @@
-import * as esbuild from 'esbuild';
+import esbuild from 'esbuild';
 
 esbuild.build({
-  entryPoints: ['server.ts'],
+  entryPoints: ['./server.ts'],
   bundle: true,
+  format: 'esm',
   platform: 'node',
-  target: 'node18',
-  outfile: 'dist/server.cjs',
-  format: 'cjs',
-  external: ['express', 'vite', 'dotenv'],
+  outfile: './dist/server.mjs',
+  external: ['zeno-compiler-core', 'express', 'vite'], // Tells esbuild to ignore your private package
+  target: 'esnext',
+  sourcemap: true,
 }).catch(() => process.exit(1));
