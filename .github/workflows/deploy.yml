@@ -41,12 +41,12 @@ jobs:
           echo "//github.com/:_authToken=${{ secrets.PAT_TOKEN }}" >> ~/.npmrc
           
           # Git rewrite rules to catch any lingering SSH attempts
-          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "https://github.com/"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git@github.com:"
           git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git+ssh://git@github.com/"
-          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "git+https://github.com/"
-          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/".insteadOf "ssh://"
+          
+          # Specific rewrite for the private repository via HTTPS
+          git config --global url."https://${{ secrets.PAT_TOKEN }}@github.com/Ahmedqabbani/zeno-compiler-core.git".insteadOf "https://github.com/Ahmedqabbani/zeno-compiler-core.git"
 
       # Bypass the broken Mac lockfile and force a fresh HTTPS installation
       - name: Install Dependencies
